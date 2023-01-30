@@ -16,6 +16,13 @@ public class Main
 		Dog penny = new Dog();
 		penny.setName("Penny");
 		penny.speak();
+
+		cat ginger = new cat();
+		ginger.setName("Ginger");
+		ginger.speak();
+
+		helloProcessing();
+
 	}
 	
 }
