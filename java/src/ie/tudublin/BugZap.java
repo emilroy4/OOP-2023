@@ -3,79 +3,141 @@ package ie.tudublin;
 import processing.core.PApplet;
 
 public class BugZap extends PApplet {
-	float playerX;
-	float playerY;
-	float halfPlayer;
-
-	float playerWidth;
-
-	// bug
-	float bugX;
-	float bugY;
-	float bugSpeed;
-	boolean bugAlive;
-
-	// score
-	int score = 0;
-
-	// settings
 	public void settings() {
-		size(500, 500);
+		size(1000, 1000);
 	}
 
 	// setup
 	public void setup() {
-		colorMode(HSB);
-		background(100);
-		smooth();
+		reset();
+	}
 
-		playerX = width * 0.5f; // initialize playerX
-		playerWidth = 50; // initialize playerWidth
-		playerY = height - 100; // initialize playerY
-		halfPlayer = playerWidth * 0.5f; // initialize halfPlayerWidth
+	float playerX, playerY;
+	float playerSpeed = 5;
+	float playerWidth = 40;
+	float halfPlayerWidth = playerWidth / 2;
 
+	float bugX, bugY, bugWidth = 100;
+	float halfBugWidth = bugWidth / 2;
+
+	int score = 0;
+
+	void reset() {
+		resetBug();
+		playerX = width / 2;
+		playerY = height - 50;
 	}
 
 	void resetBug() {
-		bugX = random(halfBug, width - halfBug);
+		bugX = random(halfBugWidth, width - halfBugWidth);
 		bugY = 50;
-		bugSpeed = 10;
-		bugAlive = true;
 	}
 
-	public void drawPlayer(float x, float y, float w) {
-		noFill();
+	void drawBug(float x, float y) {
+		// Draw the bug
 		stroke(255);
-		rectMode(CENTER);
-		rect(w, x, y, w);
-		line(x, y - halfPlayer, x, y - halfPlayer * 2);
+		float saucerHeight = bugWidth * 0.7f;
+		line(x, y - saucerHeight, x - halfBugWidth, y);
+		line(x, y - saucerHeight, x + halfBugWidth, y);
+		// line(x - halfBugWidth, y, x - halfBugWidth, y);
+		line(x - halfBugWidth, y, x + halfBugWidth, y);
+		float feet = bugWidth * 0.1f;
+		line(x - feet, y, x - halfBugWidth, y + halfBugWidth);
+		line(x + feet, y, x + halfBugWidth, y + halfBugWidth);
 
-		/*
-		 * float h = w * 0.5f;
-		 * fill(255, 255, 0);
-		 * rect(x - w / 2, y - h / 2, w, h);
-		 * strokeWeight(2);
-		 * stroke(255, 0, 0);
-		 * line(x - w * 0.5f, y - h, x + w * 0.5f, y - h);
-		 * line(x + w * 0.5f, y - h, x, y + h);
-		 * line(x, y + h, x - w * 0.5f, y - h);
-		 */
+		feet = bugWidth * 0.3f;
+		line(x - feet, y, x - halfBugWidth, y + halfBugWidth);
+		line(x + feet, y, x + halfBugWidth, y + halfBugWidth);
+
+		float eyes = bugWidth * 0.1f;
+		line(x - eyes, y - eyes, x - eyes, y - eyes * 2f);
+		line(x + eyes, y - eyes, x + eyes, y - eyes * 2f);
+
+	}
+
+	void drawPlayer(float x, float y, float w) {
+		stroke(255);
+		float playerHeight = w / 2;
+		line(x - halfPlayerWidth, y + playerHeight, x + halfPlayerWidth, y + playerHeight);
+		line(x - halfPlayerWidth, y + playerHeight, x - halfPlayerWidth, y + playerHeight * 0.5f);
+		line(x + halfPlayerWidth, y + playerHeight, x + halfPlayerWidth, y + playerHeight * 0.5f);
+
+		line(x - halfPlayerWidth, y + playerHeight * 0.5f, x - (halfPlayerWidth * 0.8f), y + playerHeight * 0.3f);
+		line(x + halfPlayerWidth, y + playerHeight * 0.5f, x + (halfPlayerWidth * 0.8f), y + playerHeight * 0.3f);
+
+		line(x - (halfPlayerWidth * 0.8f), y + playerHeight * 0.3f, x + (halfPlayerWidth * 0.8f),
+				y + playerHeight * 0.3f);
+
+		line(x, y, x, y + playerHeight * 0.3f);
+
 	}
 
 	public void keyPressed() {
+		
 		if (keyCode == LEFT) {
-			playerX--;
-			System.out.println("Left arrow pressed");
+			if (playerX > halfPlayerWidth) {
+				playerX -= playerSpeed;
+			}
 		}
 		if (keyCode == RIGHT) {
-			playerX++;
-			System.out.println("Right arrow pressed");
+			if (playerX < width - halfPlayerWidth) {
+				playerX += playerSpeed;
+			}
 		}
-		if (key == ' ') {
-			line(playerX, playerY, bugX, bugY);
+		if (keyCode == ' ')
+		{
+			if (playerX > bugX - halfBugWidth && playerX < bugX + halfBugWidth)
+			{
+				line(playerX, playerY, playerX, bugY);
+				score ++;
+				resetBug();
+			}
+			else
+			{
+				line(playerX, playerY, playerX, 0);
+			}
+		}
+	}
 
-			System.out.println("SPACE key pressed");
+	void moveBug() {
+		if ((frameCount % 30) == 0) {
+			bugX += random(-5, 5);
+			if (bugX < halfBugWidth) {
+				bugX = halfBugWidth;
+			}
+			if (bugX > width - halfBugWidth) {
+				bugX = width - halfBugWidth;
+			}
+			bugY += 2;
 		}
+	}
+
+	int gameMode = 0;
+
+	public void draw() {
+		background(0);
+		fill(255);
+		text("Score: " + score, 50, 100);
+		if (gameMode == 0)
+		{
+			fill(255);
+			drawPlayer(playerX, playerY, playerWidth);
+			drawBug(bugX, bugY);
+			moveBug();
+
+			text("Score: " + score, 20, 20);
+		}
+		else
+		{
+			textAlign(CENTER, CENTER);
+			text("GAME OVER!!!", width / 2, height / 2);
+		}
+
+		if (bugY > height - 50)
+		{
+			gameMode = 1;
+		}
+
 	}
 
 	public void draw() { /*
