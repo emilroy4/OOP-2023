@@ -14,9 +14,26 @@ public class StarMap extends PApplet
 		background(0);
 
 		smooth();
-		
+		drawGrid();
 	}
 
+		public void drawGrid()
+		{
+			stroke(255);
+
+			float border = 50.0f;
+
+			float count =10;
+			float gap = width - (border * 2.0f) / (float) count;
+			for(int i = -5; i<=5; i++)
+			{
+				float x = border + (gap * (i + 5));
+
+				line(x, border, x, height - border);
+				line(border, x, width - border, x);
+
+			}
+		}
 		
 	public void draw()
 	{	
