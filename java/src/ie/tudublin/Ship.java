@@ -49,6 +49,17 @@ public class Ship {
     private float size;
     private float halfSize;
 
+
+    int fireRate = 5;
+
+    int toPass = 1000/fireRate;
+    int ellapsed = 1000;
+
+   
+
+
+
+
     public void move()
     {
         forward.x = PApplet.sin(rot);
@@ -87,7 +98,13 @@ public class Ship {
 
             ((YASC)p).bullets.add(b);
         }
+
+        int now 
+        timeDelta = now - last;
+        ellapsed+= timeDelta;
+
     }
+    int last = 0;
 
     public void render()
     {
